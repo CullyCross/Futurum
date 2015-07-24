@@ -112,7 +112,7 @@ MEDIA_URL = '/media/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, '/media/')
 
-# Project images root and url
+# Project images root and url todo(CullyCross): fix images uploading tomorrow
 
 IMAGES_URL = MEDIA_URL + 'images/'
 

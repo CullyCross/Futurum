@@ -1,14 +1,20 @@
+import os
 from django.db import models
 from Futurum import settings
+from Futurum.settings import IMAGES_ROOT
 
 
 class Context(models.Model):
 
+    # todo(CullyCross): check if it's possible to do not show empty line in admin panel and also choices that are used
     type = models.CharField(max_length=1, choices=(
         ('M', 'Personal'),
         ('F', 'Family'),
         ('K', 'Kids'),
-    ))
+    ), unique=True)
+
+    def __str__(self):
+        return self.get_type_display()
 
 
 class Language(models.Model):
@@ -17,7 +23,10 @@ class Language(models.Model):
         ('EN', 'English'),
         ('RU', 'Russian'),
         ('UA', 'Ukrainian'),
-    ))
+    ), unique=True)
+
+    def __str__(self):
+        return self.get_language_display()
 
 
 class Skill(models.Model):
@@ -25,6 +34,19 @@ class Skill(models.Model):
     # Foreign keys
     skill_context = models.ForeignKey('Context', related_name='skills')
 
+    # todo(CullyCross): later customize admin panel with translations inside same for all translations
+    # def __str__(self):
+    #     language = Language.objects.filter(language='EN')
+    #
+    #     objects = self.languages
+    #
+    #     if objects is not None:
+    #         name = objects.filter(language=language).first().name
+    #         if not name:
+    #             name = objects.first()
+    #         return name
+    #     else:
+    #         return 'Skill'
 
 class SkillLanguage(models.Model):
 
@@ -36,6 +58,9 @@ class SkillLanguage(models.Model):
     name = models.CharField(max_length=22)
     description = models.TextField()
 
+    def __str__(self):
+        return self.name + ' ' + str(self.language)
+
 
 class Reference(models.Model):
 
@@ -44,7 +69,7 @@ class Reference(models.Model):
 
     # Other fields
     email = models.EmailField()
-    picture = models.ImageField(upload_to=settings.IMAGES_URL+'refs/')
+    picture = models.ImageField(upload_to=os.path.join(IMAGES_ROOT, 'refs/'))
 
 
 class ReferenceLanguage(models.Model):
@@ -56,6 +81,9 @@ class ReferenceLanguage(models.Model):
     # Translatable fields
     name = models.CharField(max_length=22)
     description = models.TextField()
+
+    def __str__(self):
+        return self.name + ' ' + str(self.language)
 
 
 class Category(models.Model):
@@ -73,6 +101,9 @@ class CategoryLanguage(models.Model):
     # Translatable fields
     name = models.CharField(max_length=22)
 
+    def __str__(self):
+        return self.name + ' ' + str(self.language)
+
 
 class SkillLevel(models.Model):
 
@@ -81,7 +112,7 @@ class SkillLevel(models.Model):
 
     # Other fields
     level = models.IntegerField()
-    picture = models.ImageField(upload_to=settings.IMAGES_URL+'levels/')
+    picture = models.ImageField(upload_to=os.path.join(IMAGES_ROOT, 'levels/'))
 
 
 class SkillLevelLanguage(models.Model):
@@ -93,6 +124,9 @@ class SkillLevelLanguage(models.Model):
     # Translatable fields
     name = models.CharField(max_length=22)
     description = models.TextField()
+
+    def __str__(self):
+        return self.name + ' ' + str(self.language)
 
 
 class SkillLevelAction(models.Model):
@@ -110,3 +144,7 @@ class SkillLevelActionLanguage(models.Model):
     # Translatable fields
     name = models.CharField(max_length=22)
     description = models.TextField()
+
+    def __str__(self):
+        return self.name + ' ' + str(self.language)
+
