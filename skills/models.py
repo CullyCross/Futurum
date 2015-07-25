@@ -4,6 +4,15 @@ from Futurum import settings
 from Futurum.settings import IMAGES_ROOT
 
 
+# ВАЖНЫЙ КОММЕНТАРИЙ ДЛЯ todo(cullycross):
+# я (yeahframeoff), которому ты дал доступ к свеому аккаунт,
+#  как перфекционист, не мог спокойно смотреть на содом
+# дублирования кода, что здесь творился. Понятно,
+# что целиком этой проблемы не избежать, но я хоть сколько-то
+# попытался. Да, теперь нету related_name, вместо этого используется
+# skill.skill_languages_set.all()
+
+
 class Context(models.Model):
 
     # todo(CullyCross): check if it's possible to do not show empty line in admin panel and also choices that are used
@@ -48,18 +57,25 @@ class Skill(models.Model):
     #     else:
     #         return 'Skill'
 
-class SkillLanguage(models.Model):
 
-    # Foreign keys
-    language = models.ForeignKey('Language', related_name='skill_translations')
-    skill = models.ForeignKey('Skill', related_name='languages')
+class AbstractLanguageRelatedModel(models.Model):
+    class Meta:
+        abstract = True
+    language = models.ForeignKey('Language')
 
     # Translatable fields
     name = models.CharField(max_length=22)
-    description = models.TextField()
+    description = models.TextField(default='')
 
     def __str__(self):
         return self.name + ' ' + str(self.language)
+
+
+
+class SkillLanguage(AbstractLanguageRelatedModel):
+
+    # Foreign keys
+    skill = models.ForeignKey('Skill', related_name='languages')
 
 
 class Reference(models.Model):
@@ -72,18 +88,10 @@ class Reference(models.Model):
     picture = models.ImageField(upload_to=os.path.join(IMAGES_ROOT, 'refs/'))
 
 
-class ReferenceLanguage(models.Model):
+class ReferenceLanguage(AbstractLanguageRelatedModel):
 
     # Foreign keys
-    language = models.ForeignKey('Language', related_name='reference_translations')
     reference = models.ForeignKey('Reference', related_name='languages')
-
-    # Translatable fields
-    name = models.CharField(max_length=22)
-    description = models.TextField()
-
-    def __str__(self):
-        return self.name + ' ' + str(self.language)
 
 
 class Category(models.Model):
@@ -92,17 +100,10 @@ class Category(models.Model):
     skills = models.ManyToManyField('Skill', related_name='categories')
 
 
-class CategoryLanguage(models.Model):
+class CategoryLanguage(AbstractLanguageRelatedModel):
 
     # Foreign keys
-    language = models.ForeignKey('Language', related_name='category_translations')
     category = models.ForeignKey('Category', related_name='languages')
-
-    # Translatable fields
-    name = models.CharField(max_length=22)
-
-    def __str__(self):
-        return self.name + ' ' + str(self.language)
 
 
 class SkillLevel(models.Model):
@@ -115,18 +116,10 @@ class SkillLevel(models.Model):
     picture = models.ImageField(upload_to=os.path.join(IMAGES_ROOT, 'levels/'))
 
 
-class SkillLevelLanguage(models.Model):
+class SkillLevelLanguage(AbstractLanguageRelatedModel):
 
     # Foreign keys
-    language = models.ForeignKey('Language', related_name='skill_levels_translations')
     skill_level = models.ForeignKey('SkillLevel', related_name='languages')
-
-    # Translatable fields
-    name = models.CharField(max_length=22)
-    description = models.TextField()
-
-    def __str__(self):
-        return self.name + ' ' + str(self.language)
 
 
 class SkillLevelAction(models.Model):
@@ -135,16 +128,7 @@ class SkillLevelAction(models.Model):
     skill_level = models.ForeignKey('SkillLevel', related_name='actions')
 
 
-class SkillLevelActionLanguage(models.Model):
+class SkillLevelActionLanguage(AbstractLanguageRelatedModel):
 
     # Foreign keys
-    language = models.ForeignKey('Language', related_name='skill_level_actions_translations')
     skill_level_action = models.ForeignKey('SkillLevelAction', related_name='languages')
-
-    # Translatable fields
-    name = models.CharField(max_length=22)
-    description = models.TextField()
-
-    def __str__(self):
-        return self.name + ' ' + str(self.language)
-
