@@ -4,64 +4,47 @@ from Futurum import settings
 from Futurum.settings import IMAGES_ROOT
 
 
-# ВАЖНЫЙ КОММЕНТАРИЙ ДЛЯ todo(cullycross):
-# я (yeahframeoff), которому ты дал доступ к свеому аккаунт,
-#  как перфекционист, не мог спокойно смотреть на содом
-# дублирования кода, что здесь творился. Понятно,
-# что целиком этой проблемы не избежать, но я хоть сколько-то
-# попытался. Да, теперь нету related_name, вместо этого используется
-# skill.skill_languages_set.all()
+# todo(CullyCross): check if it's possible to do not show empty line in admin panel and also choices that are used
+
+LANG_EN = 'EN'
+LANG_RU = 'RU'
+LANG_UA = 'UA'
+
+LANGUAGES = (
+    (LANG_EN, 'English'),
+    (LANG_RU, 'Russian'),
+    (LANG_UA, 'Ukrainian'),
+)
+
+class SkillManager(models.Manager):
+    def get_queryset(self):
+        return super(SkillManager, self).get_queryset().select_related('languages')
 
 
-class Context(models.Model):
-
-    # todo(CullyCross): check if it's possible to do not show empty line in admin panel and also choices that are used
-    type = models.CharField(max_length=1, choices=(
-        ('M', 'Personal'),
-        ('F', 'Family'),
-        ('K', 'Kids'),
-    ), unique=True)
-
-    def __str__(self):
-        return self.get_type_display()
-
-
-class Language(models.Model):
-
-    language = models.CharField(max_length=2, choices=(
-        ('EN', 'English'),
-        ('RU', 'Russian'),
-        ('UA', 'Ukrainian'),
-    ), unique=True)
-
-    def __str__(self):
-        return self.get_language_display()
-
-
-class Skill(models.Model):
-
-    # Foreign keys
-    skill_context = models.ForeignKey('Context', related_name='skills')
-
-    # todo(CullyCross): later customize admin panel with translations inside same for all translations
-    # def __str__(self):
-    #     language = Language.objects.filter(language='EN')
-    #
-    #     objects = self.languages
-    #
-    #     if objects is not None:
-    #         name = objects.filter(language=language).first().name
-    #         if not name:
-    #             name = objects.first()
-    #         return name
-    #     else:
-    #         return 'Skill'
-
-
-class AbstractLanguageRelatedModel(models.Model):
+class AbstractTranslatableEntity(models.Model):
     class Meta:
         abstract = True
-    language = models.ForeignKey('Language')
+
+    # Manager
+    objects = SkillManager()
+
+    def __str__(self):
+
+        try:
+            return self.languages.get(language=LANG_EN).name
+        except TM.DoesNotExist:
+            try:
+                return self.languages.first().name
+            except TM.DoesNotExist:
+                return 'Untranslated yet entity'
+
+
+class AbstractTranslationModel(models.Model):
+    class Meta:
+        abstract = True
+        unique_together = 'id', 'language'
+
+    language = models.CharField(max_length=2, choices=LANGUAGES, unique=True)
 
     # Translatable fields
     name = models.CharField(max_length=22)
@@ -71,14 +54,29 @@ class AbstractLanguageRelatedModel(models.Model):
         return self.name + ' ' + str(self.language)
 
 
+TM = AbstractTranslationModel
+TE = AbstractTranslatableEntity
 
-class SkillLanguage(AbstractLanguageRelatedModel):
+
+class Skill(TE):
+    class Meta:
+        unique_together = 'id', 'context'
+
+    # Foreign keys
+    context = models.CharField(max_length=1, choices=(
+        ('M', 'Personal'),
+        ('F', 'Family'),
+        ('K', 'Kids'),
+    ), unique=True)
+
+
+class SkillLanguage(TM):
 
     # Foreign keys
     skill = models.ForeignKey('Skill', related_name='languages')
 
 
-class Reference(models.Model):
+class Reference(TE):
 
     # Foreign keys
     skills = models.ManyToManyField('Skill', related_name='references')
@@ -88,25 +86,25 @@ class Reference(models.Model):
     picture = models.ImageField(upload_to=os.path.join(IMAGES_ROOT, 'refs/'))
 
 
-class ReferenceLanguage(AbstractLanguageRelatedModel):
+class ReferenceLanguage(TM):
 
     # Foreign keys
     reference = models.ForeignKey('Reference', related_name='languages')
 
 
-class Category(models.Model):
+class Category(TE):
 
     # Foreign keys
     skills = models.ManyToManyField('Skill', related_name='categories')
 
 
-class CategoryLanguage(AbstractLanguageRelatedModel):
+class CategoryLanguage(TM):
 
     # Foreign keys
     category = models.ForeignKey('Category', related_name='languages')
 
 
-class SkillLevel(models.Model):
+class SkillLevel(TE):
 
     # Foreign keys
     skill = models.ForeignKey('Skill', related_name='levels')
@@ -116,19 +114,19 @@ class SkillLevel(models.Model):
     picture = models.ImageField(upload_to=os.path.join(IMAGES_ROOT, 'levels/'))
 
 
-class SkillLevelLanguage(AbstractLanguageRelatedModel):
+class SkillLevelLanguage(TM):
 
     # Foreign keys
     skill_level = models.ForeignKey('SkillLevel', related_name='languages')
 
 
-class SkillLevelAction(models.Model):
+class SkillLevelAction(TE):
 
     # Foreign keys
     skill_level = models.ForeignKey('SkillLevel', related_name='actions')
 
 
-class SkillLevelActionLanguage(AbstractLanguageRelatedModel):
+class SkillLevelActionLanguage(TM):
 
     # Foreign keys
     skill_level_action = models.ForeignKey('SkillLevelAction', related_name='languages')
