@@ -1,6 +1,5 @@
 import os
 from django.db import models
-from Futurum import settings
 from Futurum.settings import IMAGES_ROOT
 
 
@@ -73,13 +72,13 @@ class Skill(TE):
 class SkillLanguage(TM):
 
     # Foreign keys
-    skill = models.ForeignKey('Skill', related_name='languages')
+    skill = models.ForeignKey(Skill, related_name='languages')
 
 
 class Reference(TE):
 
     # Foreign keys
-    skills = models.ManyToManyField('Skill', related_name='references')
+    skills = models.ManyToManyField(Skill, related_name='references')
 
     # Other fields
     email = models.EmailField()
@@ -89,25 +88,25 @@ class Reference(TE):
 class ReferenceLanguage(TM):
 
     # Foreign keys
-    reference = models.ForeignKey('Reference', related_name='languages')
+    reference = models.ForeignKey(Reference, related_name='languages')
 
 
 class Category(TE):
 
     # Foreign keys
-    skills = models.ManyToManyField('Skill', related_name='categories')
+    skills = models.ManyToManyField(Skill, related_name='categories')
 
 
 class CategoryLanguage(TM):
 
     # Foreign keys
-    category = models.ForeignKey('Category', related_name='languages')
+    category = models.ForeignKey(Category, related_name='languages')
 
 
 class SkillLevel(TE):
 
     # Foreign keys
-    skill = models.ForeignKey('Skill', related_name='levels')
+    skill = models.ForeignKey(Skill, related_name='levels')
 
     # Other fields
     level = models.IntegerField()
@@ -117,16 +116,16 @@ class SkillLevel(TE):
 class SkillLevelLanguage(TM):
 
     # Foreign keys
-    skill_level = models.ForeignKey('SkillLevel', related_name='languages')
+    skill_level = models.ForeignKey(SkillLevel, related_name='languages')
 
 
 class SkillLevelAction(TE):
 
     # Foreign keys
-    skill_level = models.ForeignKey('SkillLevel', related_name='actions')
+    skill_level = models.ForeignKey(SkillLevel, related_name='actions')
 
 
 class SkillLevelActionLanguage(TM):
 
     # Foreign keys
-    skill_level_action = models.ForeignKey('SkillLevelAction', related_name='languages')
+    skill_level_action = models.ForeignKey(SkillLevelAction, related_name='languages')
