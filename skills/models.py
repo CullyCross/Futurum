@@ -3,7 +3,8 @@ from django.db import models
 from Futurum.settings import IMAGES_ROOT
 
 
-# todo(CullyCross): check if it's possible to do not show empty line in admin panel and also choices that are used
+# todo(CullyCross): check if it's possible to do not show
+# empty line in admin panel and also choices that are used
 
 LANG_EN = 'EN'
 LANG_RU = 'RU'
@@ -15,9 +16,10 @@ LANGUAGES = (
     (LANG_UA, 'Ukrainian'),
 )
 
-class SkillManager(models.Manager):
+class TranslatableEntityManager(models.Manager):
     def get_queryset(self):
-        return super(SkillManager, self).get_queryset().select_related('languages')
+        return super(TranslatableEntityManager, self)\
+            .get_queryset().prefetch_related('translations')
 
 
 class AbstractTranslatableEntity(models.Model):
@@ -25,15 +27,15 @@ class AbstractTranslatableEntity(models.Model):
         abstract = True
 
     # Manager
-    objects = SkillManager()
+    objects = TranslatableEntityManager()
 
     def __str__(self):
 
         try:
-            return self.languages.get(language=LANG_EN).name
+            return self.translations.get(language=LANG_EN).name
         except TM.DoesNotExist:
             try:
-                return self.languages.first().name
+                return self.translations.first().name
             except TM.DoesNotExist:
                 return 'Untranslated yet entity'
 
@@ -69,10 +71,11 @@ class Skill(TE):
     ), unique=True)
 
 
-class SkillLanguage(TM):
+class SkillTranslation(TM):
 
     # Foreign keys
-    skill = models.ForeignKey(Skill, related_name='languages')
+    skill = models.ForeignKey(Skill, related_name='translations',
+                              related_query_name='translation')
 
 
 class Reference(TE):
@@ -85,10 +88,11 @@ class Reference(TE):
     picture = models.ImageField(upload_to=os.path.join(IMAGES_ROOT, 'refs/'))
 
 
-class ReferenceLanguage(TM):
+class ReferenceTranslation(TM):
 
     # Foreign keys
-    reference = models.ForeignKey(Reference, related_name='languages')
+    reference = models.ForeignKey(Reference, related_name='translations',
+                                  related_query_name='translation')
 
 
 class Category(TE):
@@ -97,10 +101,11 @@ class Category(TE):
     skills = models.ManyToManyField(Skill, related_name='categories')
 
 
-class CategoryLanguage(TM):
+class CategoryTranslation(TM):
 
     # Foreign keys
-    category = models.ForeignKey(Category, related_name='languages')
+    category = models.ForeignKey(Category, related_name='translations',
+                                 related_query_name='translation')
 
 
 class SkillLevel(TE):
@@ -113,10 +118,11 @@ class SkillLevel(TE):
     picture = models.ImageField(upload_to=os.path.join(IMAGES_ROOT, 'levels/'))
 
 
-class SkillLevelLanguage(TM):
+class SkillLevelTranslation(TM):
 
     # Foreign keys
-    skill_level = models.ForeignKey(SkillLevel, related_name='languages')
+    skill_level = models.ForeignKey(SkillLevel, related_name='translations',
+                                    related_query_name='translation')
 
 
 class SkillLevelAction(TE):
@@ -125,7 +131,8 @@ class SkillLevelAction(TE):
     skill_level = models.ForeignKey(SkillLevel, related_name='actions')
 
 
-class SkillLevelActionLanguage(TM):
+class SkillLevelActionTranslation(TM):
 
     # Foreign keys
-    skill_level_action = models.ForeignKey(SkillLevelAction, related_name='languages')
+    skill_level_action = models.ForeignKey(SkillLevelAction, related_name='translations',
+                                           related_query_name='translation')

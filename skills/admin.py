@@ -2,18 +2,18 @@ from django.contrib import admin
 from django.contrib.admin.sites import AlreadyRegistered
 
 from .models import \
-    Skill, SkillLanguage, \
-    Reference, ReferenceLanguage, \
-    Category, CategoryLanguage, \
-    SkillLevel, SkillLevelLanguage, \
-    SkillLevelAction, SkillLevelActionLanguage
+    Skill, SkillTranslation, \
+    Reference, ReferenceTranslation, \
+    Category, CategoryTranslation, \
+    SkillLevel, SkillLevelTranslation, \
+    SkillLevelAction, SkillLevelActionTranslation
 
 mapped_models = (
-    (Skill, SkillLanguage),
-    (Reference, ReferenceLanguage),
-    (Category, CategoryLanguage),
-    (SkillLevel, SkillLevelLanguage),
-    (SkillLevelAction, SkillLevelActionLanguage)
+    (Skill, SkillTranslation),
+    (Reference, ReferenceTranslation),
+    (Category, CategoryTranslation),
+    (SkillLevel, SkillLevelTranslation),
+    (SkillLevelAction, SkillLevelActionTranslation)
 )
 
 for model, lang_model in mapped_models:
