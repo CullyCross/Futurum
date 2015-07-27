@@ -1,4 +1,5 @@
 import os
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 
 
@@ -41,10 +42,10 @@ class AbstractTranslatableEntity(models.Model):
 
         try:
             return self.translations.get(language=LANG_EN).name
-        except TM.DoesNotExist:
+        except ObjectDoesNotExist:
             try:
                 return self.translations.first().name
-            except TM.DoesNotExist:
+            except ObjectDoesNotExist:
                 return 'Untranslated yet entity'
 
 
