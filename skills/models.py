@@ -1,14 +1,22 @@
 import os
 from django.db import models
-from Futurum.settings import IMAGES_ROOT
 
 
 # todo(CullyCross): check if it's possible to do not show
 # empty line in admin panel and also choices that are used
+KIDS = 'K'
+FAMILY = 'F'
+PERSONAL = 'M'
 
 LANG_EN = 'EN'
 LANG_RU = 'RU'
 LANG_UA = 'UA'
+
+CONTEXT = (
+    (PERSONAL, 'Personal'),
+    (FAMILY, 'Family'),
+    (KIDS, 'Kids'),
+)
 
 LANGUAGES = (
     (LANG_EN, 'English'),
@@ -43,9 +51,9 @@ class AbstractTranslatableEntity(models.Model):
 class AbstractTranslationModel(models.Model):
     class Meta:
         abstract = True
-        unique_together = 'id', 'language'
+        unique_together = (('id', 'language'), )
 
-    language = models.CharField(max_length=2, choices=LANGUAGES, unique=True)
+    language = models.CharField(max_length=2, choices=LANGUAGES)
 
     # Translatable fields
     name = models.CharField(max_length=22)
@@ -63,12 +71,7 @@ class Skill(TE):
     class Meta:
         unique_together = 'id', 'context'
 
-    # Foreign keys
-    context = models.CharField(max_length=1, choices=(
-        ('M', 'Personal'),
-        ('F', 'Family'),
-        ('K', 'Kids'),
-    ), unique=True)
+    context = models.CharField(max_length=1, choices=CONTEXT)
 
 
 class SkillTranslation(TM):
@@ -85,7 +88,7 @@ class Reference(TE):
 
     # Other fields
     email = models.EmailField()
-    picture = models.ImageField(upload_to=os.path.join(IMAGES_ROOT, 'refs/'))
+    picture = models.ImageField(upload_to='refs/')
 
 
 class ReferenceTranslation(TM):
@@ -115,7 +118,7 @@ class SkillLevel(TE):
 
     # Other fields
     level = models.IntegerField()
-    picture = models.ImageField(upload_to=os.path.join(IMAGES_ROOT, 'levels/'))
+    picture = models.ImageField(upload_to='levels/')
 
 
 class SkillLevelTranslation(TM):
