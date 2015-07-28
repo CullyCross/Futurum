@@ -1,5 +1,4 @@
-import os
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.db import models
 
 
@@ -25,9 +24,10 @@ LANGUAGES = (
     (LANG_UA, 'Ukrainian'),
 )
 
+
 class TranslatableEntityManager(models.Manager):
     def get_queryset(self):
-        return super(TranslatableEntityManager, self)\
+        return super(TranslatableEntityManager, self) \
             .get_queryset().prefetch_related('translations')
 
 
@@ -42,6 +42,8 @@ class AbstractTranslatableEntity(models.Model):
 
         try:
             return self.translations.get(language=LANG_EN).name
+        except MultipleObjectsReturned:  # todo(CullyCross) check if it has to work this way
+            return self.translations.filter(language=LANG_EN).first().name
         except ObjectDoesNotExist:
             try:
                 return self.translations.first().name
@@ -52,7 +54,8 @@ class AbstractTranslatableEntity(models.Model):
 class AbstractTranslationModel(models.Model):
     class Meta:
         abstract = True
-        unique_together = (('id', 'language'), )
+        # fixme(CullyCross): unique_together with sub model's fields (foreign key)
+        # unique_together = (('translation_of__id', 'language'), )
 
     language = models.CharField(max_length=2, choices=LANGUAGES)
 
@@ -69,74 +72,63 @@ TE = AbstractTranslatableEntity
 
 
 class Skill(TE):
-    class Meta:
-        unique_together = 'id', 'context'
-
+    # Another fields
     context = models.CharField(max_length=1, choices=CONTEXT)
 
 
 class SkillTranslation(TM):
-
     # Foreign keys
-    skill = models.ForeignKey(Skill, related_name='translations',
-                              related_query_name='translation')
+    translation_of = models.ForeignKey(Skill, related_name='translations',
+                                       related_query_name='translation')
 
 
 class Reference(TE):
-
     # Foreign keys
     skills = models.ManyToManyField(Skill, related_name='references')
 
     # Other fields
     email = models.EmailField()
-    picture = models.ImageField(upload_to='refs/')
+    # picture = models.ImageField(upload_to='refs/')
 
 
 class ReferenceTranslation(TM):
-
     # Foreign keys
-    reference = models.ForeignKey(Reference, related_name='translations',
-                                  related_query_name='translation')
+    translation_of = models.ForeignKey(Reference, related_name='translations',
+                                       related_query_name='translation')
 
 
 class Category(TE):
-
     # Foreign keys
     skills = models.ManyToManyField(Skill, related_name='categories')
 
 
 class CategoryTranslation(TM):
-
     # Foreign keys
-    category = models.ForeignKey(Category, related_name='translations',
-                                 related_query_name='translation')
+    translation_of = models.ForeignKey(Category, related_name='translations',
+                                       related_query_name='translation')
 
 
 class SkillLevel(TE):
-
     # Foreign keys
     skill = models.ForeignKey(Skill, related_name='levels')
 
     # Other fields
     level = models.IntegerField()
-    picture = models.ImageField(upload_to='levels/')
+    # picture = models.ImageField(upload_to='levels/')
 
 
 class SkillLevelTranslation(TM):
-
     # Foreign keys
-    skill_level = models.ForeignKey(SkillLevel, related_name='translations',
-                                    related_query_name='translation')
+    translation_of = models.ForeignKey(SkillLevel, related_name='translations',
+                                       related_query_name='translation')
 
 
 class SkillLevelAction(TE):
-
     # Foreign keys
     skill_level = models.ForeignKey(SkillLevel, related_name='actions')
 
 
 class SkillLevelActionTranslation(TM):
-
     # Foreign keys
-    skill_level_action = models.ForeignKey(SkillLevelAction, related_name='translations',
-                                           related_query_name='translation')
+    translation_of = models.ForeignKey(SkillLevelAction, related_name='translations',
+                                       related_query_name='translation')
