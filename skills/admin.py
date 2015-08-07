@@ -5,15 +5,13 @@ from .models import \
     Skill, SkillTranslation, \
     Reference, ReferenceTranslation, \
     Category, CategoryTranslation, \
-    SkillLevel, SkillLevelTranslation, \
-    SkillLevelAction, SkillLevelActionTranslation
+    SkillLevel, SkillLevelTranslation
 
 mapped_models = (
     (Skill, SkillTranslation),
     (Reference, ReferenceTranslation),
     (Category, CategoryTranslation),
-    (SkillLevel, SkillLevelTranslation),
-    (SkillLevelAction, SkillLevelActionTranslation)
+    (SkillLevel, SkillLevelTranslation)
 )
 
 for model, lang_model in mapped_models:

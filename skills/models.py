@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.db import models
 
@@ -72,6 +73,13 @@ TE = AbstractTranslatableEntity
 
 
 class Skill(TE):
+    # ForeignKeys
+    # Related or parent?
+    parent_skills = models.ManyToManyField('self', related_name='foots')
+    # fixme(CullyCross): later set constraint to true
+    owner = models.ForeignKey(User, related_name='created_skills', db_constraint=False)
+    contributors = models.ManyToManyField(User, related_name='contributed_to')
+
     # Another fields
     context = models.CharField(max_length=1, choices=CONTEXT)
 
@@ -120,15 +128,4 @@ class SkillLevel(TE):
 class SkillLevelTranslation(TM):
     # Foreign keys
     translation_of = models.ForeignKey(SkillLevel, related_name='translations',
-                                       related_query_name='translation')
-
-
-class SkillLevelAction(TE):
-    # Foreign keys
-    skill_level = models.ForeignKey(SkillLevel, related_name='actions')
-
-
-class SkillLevelActionTranslation(TM):
-    # Foreign keys
-    translation_of = models.ForeignKey(SkillLevelAction, related_name='translations',
                                        related_query_name='translation')
