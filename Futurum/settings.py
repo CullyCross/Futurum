@@ -37,9 +37,13 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # mine
     'skills',
     'builder',
+    'api',
+    # libraries
     'rest_framework',
+    'nested_inline',
 )
 
 MIDDLEWARE_CLASSES = (

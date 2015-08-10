@@ -34,7 +34,6 @@ class AbstractTranslationFieldModel(models.Model):
 
     # Translatable fields
     name = models.CharField(max_length=22)
-    description = models.TextField(default='')
 
     def __str__(self):
         return self.name + ' ' + str(self.language)
@@ -52,9 +51,6 @@ class TextFieldTranslation(TFM):
     translation_of = models.ForeignKey(TextField, related_name='translations',
                                        related_query_name='translation')
 
-    # Other fields
-    data = models.TextField()
-
 
 class CharField(TF):
     pass
@@ -64,9 +60,6 @@ class CharFieldTranslation(TFM):
     # Foreign keys
     translation_of = models.ForeignKey(CharField, related_name='translations',
                                        related_query_name='translation')
-
-    # Other fields
-    data = models.CharField(max_length=100)
 
 
 class ImageField(TF):
