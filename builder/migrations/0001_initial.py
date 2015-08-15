@@ -15,11 +15,22 @@ class Migration(migrations.Migration):
             name='CharField',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('data', models.CharField(max_length=100)),
-                ('skill', models.ForeignKey(related_name='charfield_set', to='skills.Skill')),
+                ('skill_level', models.ForeignKey(related_name='char_fields', to='skills.SkillLevel', null=True)),
             ],
             options={
                 'abstract': False,
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='CharFieldTranslation',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('language', models.CharField(max_length=2, choices=[(b'EN', b'English'), (b'RU', b'Russian'), (b'UA', b'Ukrainian')])),
+                ('name', models.CharField(max_length=22)),
+                ('translation_of', models.ForeignKey(related_query_name=b'translation', related_name='translations', to='builder.CharField')),
+            ],
+            options={
             },
             bases=(models.Model,),
         ),
@@ -27,7 +38,7 @@ class Migration(migrations.Migration):
             name='ImageField',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('skill', models.ForeignKey(related_name='imagefield_set', to='skills.Skill')),
+                ('skill_level', models.ForeignKey(related_name='image_fields', to='skills.SkillLevel', null=True)),
             ],
             options={
                 'abstract': False,
@@ -35,15 +46,50 @@ class Migration(migrations.Migration):
             bases=(models.Model,),
         ),
         migrations.CreateModel(
+            name='ImageFieldTranslation',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('language', models.CharField(max_length=2, choices=[(b'EN', b'English'), (b'RU', b'Russian'), (b'UA', b'Ukrainian')])),
+                ('name', models.CharField(max_length=22)),
+                ('translation_of', models.ForeignKey(related_query_name=b'translation', related_name='translations', to='builder.ImageField')),
+            ],
+            options={
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
             name='TextField',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('data', models.TextField()),
-                ('skill', models.ForeignKey(related_name='textfield_set', to='skills.Skill')),
+                ('skill_level', models.ForeignKey(related_name='text_fields', to='skills.SkillLevel', null=True)),
             ],
             options={
                 'abstract': False,
             },
             bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='TextFieldTranslation',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('language', models.CharField(max_length=2, choices=[(b'EN', b'English'), (b'RU', b'Russian'), (b'UA', b'Ukrainian')])),
+                ('name', models.CharField(max_length=22)),
+                ('translation_of', models.ForeignKey(related_query_name=b'translation', related_name='translations', to='builder.TextField')),
+            ],
+            options={
+            },
+            bases=(models.Model,),
+        ),
+        migrations.AlterUniqueTogether(
+            name='textfieldtranslation',
+            unique_together=set([('translation_of', 'language')]),
+        ),
+        migrations.AlterUniqueTogether(
+            name='imagefieldtranslation',
+            unique_together=set([('translation_of', 'language')]),
+        ),
+        migrations.AlterUniqueTogether(
+            name='charfieldtranslation',
+            unique_together=set([('translation_of', 'language')]),
         ),
     ]

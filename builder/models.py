@@ -2,16 +2,12 @@ from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.db import models
 from skills.models import LANGUAGES, TranslatableEntityManager, LANG_EN, SkillLevel
 
-
 class AbstractTranslatableField(models.Model):
     class Meta:
         abstract = True
 
     # Manager
     objects = TranslatableEntityManager()
-
-    # Foreign keys
-    skill_level = models.ForeignKey(SkillLevel, related_name='%(class)s_set')
 
     def __str__(self):
 
@@ -43,7 +39,10 @@ TF = AbstractTranslatableField
 TFM = AbstractTranslationFieldModel
 
 class TextField(TF):
-    pass
+    # Foreign keys
+    # todo(CullyCross): later delete null=True and add foreignkey on saving
+    skill_level = models.ForeignKey(SkillLevel, related_name='text_fields', null=True)
+
 
 
 class TextFieldTranslation(TFM):
@@ -56,7 +55,8 @@ class TextFieldTranslation(TFM):
 
 
 class CharField(TF):
-    pass
+    # Foreign keys
+    skill_level = models.ForeignKey(SkillLevel, related_name='char_fields', null=True)
 
 
 class CharFieldTranslation(TFM):
@@ -69,7 +69,9 @@ class CharFieldTranslation(TFM):
 
 
 class ImageField(TF):
-    pass
+    # Foreign keys
+    skill_level = models.ForeignKey(SkillLevel, related_name='image_fields', null=True)
+
 
 
 class ImageFieldTranslation(TFM):
