@@ -6,6 +6,6 @@ __author__ = 'cullycross'
 class SkillSerializer(serializers.ModelSerializer):
     class Meta:
         model = Skill
-        #fields =
+        # fields =
 
 

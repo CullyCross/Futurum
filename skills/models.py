@@ -44,6 +44,7 @@ class AbstractTranslatableEntity(models.Model):
         try:
             return self.translations.get(language=LANG_EN).name
         except MultipleObjectsReturned:  # todo(CullyCross) check if it has to work this way
+            # it works this way when user "save and continue editing", this action ignores unique_together
             return self.translations.filter(language=LANG_EN).first().name
         except ObjectDoesNotExist:
             try:
@@ -55,8 +56,6 @@ class AbstractTranslatableEntity(models.Model):
 class AbstractTranslationModel(models.Model):
     class Meta:
         abstract = True
-        # fixme(CullyCross): unique_together with sub model's fields (foreign key)
-        # unique_together = (('translation_of__id', 'language'), )
 
     language = models.CharField(max_length=2, choices=LANGUAGES)
 
@@ -75,16 +74,20 @@ TE = AbstractTranslatableEntity
 class Skill(TE):
     # ForeignKeys
     # Related or parent?
-    parent_skills = models.ManyToManyField('self', related_name='foots')
+    parent_skills = models.ManyToManyField('self', related_name='foots', blank=True)
     # fixme(CullyCross): later set constraint to true
     owner = models.ForeignKey(User, related_name='created_skills', db_constraint=False)
-    contributors = models.ManyToManyField(User, related_name='contributed_to')
+    contributors = models.ManyToManyField(User, related_name='contributed_to', blank=True)
 
     # Another fields
     context = models.CharField(max_length=1, choices=CONTEXT)
 
 
 class SkillTranslation(TM):
+
+    class Meta:
+        unique_together = (('translation_of', 'language'), )
+
     # Foreign keys
     translation_of = models.ForeignKey(Skill, related_name='translations',
                                        related_query_name='translation')
@@ -100,6 +103,9 @@ class Reference(TE):
 
 
 class ReferenceTranslation(TM):
+    class Meta:
+        unique_together = (('translation_of', 'language'), )
+
     # Foreign keys
     translation_of = models.ForeignKey(Reference, related_name='translations',
                                        related_query_name='translation')
@@ -111,12 +117,18 @@ class Category(TE):
 
 
 class CategoryTranslation(TM):
+    class Meta:
+        unique_together = (('translation_of', 'language'), )
+
     # Foreign keys
     translation_of = models.ForeignKey(Category, related_name='translations',
                                        related_query_name='translation')
 
 
 class SkillLevel(TE):
+    class Meta:
+        unique_together = (('skill', 'level'), )
+
     # Foreign keys
     skill = models.ForeignKey(Skill, related_name='levels')
 
@@ -126,6 +138,9 @@ class SkillLevel(TE):
 
 
 class SkillLevelTranslation(TM):
+    class Meta:
+        unique_together = (('translation_of', 'language'), )
+
     # Foreign keys
     translation_of = models.ForeignKey(SkillLevel, related_name='translations',
                                        related_query_name='translation')

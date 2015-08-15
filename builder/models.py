@@ -47,6 +47,9 @@ class TextField(TF):
 
 
 class TextFieldTranslation(TFM):
+    class Meta:
+        unique_together = (('translation_of', 'language'), )
+
     # Foreign keys
     translation_of = models.ForeignKey(TextField, related_name='translations',
                                        related_query_name='translation')
@@ -57,6 +60,9 @@ class CharField(TF):
 
 
 class CharFieldTranslation(TFM):
+    class Meta:
+        unique_together = (('translation_of', 'language'), )
+
     # Foreign keys
     translation_of = models.ForeignKey(CharField, related_name='translations',
                                        related_query_name='translation')
@@ -67,6 +73,9 @@ class ImageField(TF):
 
 
 class ImageFieldTranslation(TFM):
+    class Meta:
+        unique_together = (('translation_of', 'language'), )
+
     # Foreign keys
     translation_of = models.ForeignKey(ImageField, related_name='translations',
                                        related_query_name='translation')
