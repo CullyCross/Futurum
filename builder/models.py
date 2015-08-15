@@ -1,6 +1,6 @@
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.db import models
-from skills.models import Skill, LANGUAGES, TranslatableEntityManager, LANG_EN
+from skills.models import LANGUAGES, TranslatableEntityManager, LANG_EN, SkillLevel
 
 
 class AbstractTranslatableField(models.Model):
@@ -11,7 +11,7 @@ class AbstractTranslatableField(models.Model):
     objects = TranslatableEntityManager()
 
     # Foreign keys
-    skill = models.ForeignKey(Skill, related_name='%(class)s_set')
+    skill_level = models.ForeignKey(SkillLevel, related_name='%(class)s_set')
 
     def __str__(self):
 

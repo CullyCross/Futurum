@@ -46,6 +46,11 @@ class ImageFieldTranslationInline(NestedStackedInline):
     fk_name = 'translation_of'
 
 
+class SkillLevelTranslationInline(NestedStackedInline):
+    model = SkillLevelTranslation
+    fk_name = 'translation_of'
+
+
 class LanguageSkillInlineAdmin(NestedStackedInline):
     model = SkillTranslation
     fk_name = 'translation_of'
@@ -53,26 +58,32 @@ class LanguageSkillInlineAdmin(NestedStackedInline):
 
 class TextFieldSkillInlineAdmin(NestedStackedInline):
     model = TextField
-    fk_name = 'skill'
+    fk_name = 'skill_level'
     inlines = [TextFieldTranslationInline, ]
 
 
 class CharFieldSkillInlineAdmin(NestedStackedInline):
     model = CharField
-    fk_name = 'skill'
+    fk_name = 'skill_level'
     inlines = [CharFieldTranslationInline, ]
 
 
 class ImageFieldSkillInlineAdmin(NestedStackedInline):
     model = ImageField
-    fk_name = 'skill'
+    fk_name = 'skill_level'
     inlines = [ImageFieldTranslationInline, ]
+
+
+class SkillLevelInlineAdmin(NestedStackedInline):
+    model = SkillLevel
+    fk_name = 'skill'
+    inlines = [SkillLevelTranslationInline, TextFieldSkillInlineAdmin,
+               CharFieldSkillInlineAdmin, ImageFieldSkillInlineAdmin, ]
 
 
 class SkillAdmin(NestedModelAdmin):
     model = Skill
-    inlines = [LanguageSkillInlineAdmin, TextFieldSkillInlineAdmin,
-               CharFieldSkillInlineAdmin, ImageFieldSkillInlineAdmin]
+    inlines = [LanguageSkillInlineAdmin, SkillLevelInlineAdmin, ]
 
 
 admin.site.register(Skill, SkillAdmin)
