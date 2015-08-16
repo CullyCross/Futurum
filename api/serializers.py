@@ -1,11 +1,13 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from builder.models import CharFieldTranslation, CharField, TextFieldTranslation, TextField, ImageFieldTranslation, \
-    ImageField, AbstractTranslationFieldModel
+    ImageField
 from skills.models import Skill, SkillLevelTranslation, SkillLevel, CategoryTranslation, Category, ReferenceTranslation, \
-    Reference, SkillTranslation, AbstractTranslationModel
+    Reference, SkillTranslation
 
 __author__ = 'cullycross'
+
+# todo(CullyCross): add organizer to serializers
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:

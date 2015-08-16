@@ -40,6 +40,7 @@ INSTALLED_APPS = (
     # mine
     'skills',
     'builder',
+    'organizer',
     'api',
     # libraries
     'rest_framework',
