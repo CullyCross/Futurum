@@ -60,7 +60,7 @@ class SkillTrSerializer(serializers.ModelSerializer):
 # Model serializers:
 
 class CharFieldSerializer(serializers.ModelSerializer):
-    translations = CharFieldTrSerializer()
+    translations = CharFieldTrSerializer(many=True)
 
     class Meta:
         model = CharField
@@ -68,7 +68,7 @@ class CharFieldSerializer(serializers.ModelSerializer):
 
 
 class TextFieldSerializer(serializers.ModelSerializer):
-    translations = TextFieldTrSerializer()
+    translations = TextFieldTrSerializer(many=True)
 
     class Meta:
         model = TextField
@@ -76,7 +76,7 @@ class TextFieldSerializer(serializers.ModelSerializer):
 
 
 class ImageFieldSerializer(serializers.ModelSerializer):
-    translations = ImageFieldTrSerializer()
+    translations = ImageFieldTrSerializer(many=True)
 
     class Meta:
         model = ImageField
@@ -84,10 +84,10 @@ class ImageFieldSerializer(serializers.ModelSerializer):
 
 
 class SkillLevelSerializer(serializers.ModelSerializer):
-    translations = SkillLevelTrSerializer()
-    text_fields = TextFieldSerializer()
-    char_fields = CharFieldSerializer()
-    image_fields = ImageFieldSerializer()
+    translations = SkillLevelTrSerializer(many=True)
+    text_fields = TextFieldSerializer(many=True)
+    char_fields = CharFieldSerializer(many=True)
+    image_fields = ImageFieldSerializer(many=True)
 
     class Meta:
         model = SkillLevel
@@ -96,7 +96,7 @@ class SkillLevelSerializer(serializers.ModelSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    translations = CategoryTrSerializer()
+    translations = CategoryTrSerializer(many=True)
 
     class Meta:
         model = Category
@@ -104,7 +104,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class ReferenceSerializer(serializers.ModelSerializer):
-    translations = ReferenceTrSerializer()
+    translations = ReferenceTrSerializer(many=True)
 
     class Meta:
         model = Reference
@@ -112,7 +112,7 @@ class ReferenceSerializer(serializers.ModelSerializer):
 
 
 class SkillSerializer(serializers.ModelSerializer):
-    translations = SkillTrSerializer()
+    translations = SkillTrSerializer(many=True)
     parent_skills = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     owner = UserSerializer()
     contributors = UserSerializer(many=True)
